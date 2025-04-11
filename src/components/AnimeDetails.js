@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { getAnimeById } from "../service/AnimeService";
 import {
     Box,
@@ -10,6 +10,8 @@ import {
     CardContent,
     useTheme,
     useMediaQuery,
+    Grid,
+    Button,
 } from "@mui/material";
 import { HeaderComponent } from "./HeaderComponent";
 import { CategoryComponent } from "./CategoryComponent";
@@ -17,7 +19,6 @@ import { CategoryComponent } from "./CategoryComponent";
 // Helper function to get the correct embed URL
 const getEmbedUrl = (url) => {
     if (!url) return "";
-    // Check if the URL contains "watch?v=" and then transform it
     const watchParam = "watch?v=";
     if (url.includes(watchParam)) {
         return url.replace(watchParam, "embed/");
@@ -26,16 +27,15 @@ const getEmbedUrl = (url) => {
         const parts = url.split("youtu.be/");
         return `https://www.youtube.com/embed/${parts[1]}`;
     }
-    // If URL is already an embed URL or not a YouTube URL, return it as-is.
     return url;
 };
 
 const AnimeDetail = () => {
     const { id } = useParams();
+    const navigate = useNavigate();
     const [anime, setAnime] = useState(null);
     const [loading, setLoading] = useState(true);
     const theme = useTheme();
-    // Use media queries so the layout can adjust on mobile screens.
     const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
 
     useEffect(() => {
@@ -72,6 +72,7 @@ const AnimeDetail = () => {
         <Box sx={{ backgroundColor: "#000", minHeight: "100vh", color: "#fff" }}>
             <HeaderComponent />
             <CategoryComponent />
+
             <Box
                 sx={{
                     display: "flex",
@@ -115,6 +116,7 @@ const AnimeDetail = () => {
                         )}
                     </CardContent>
                 </Card>
+
                 {anime.trailer && (
                     <Box
                         sx={{
@@ -151,7 +153,6 @@ const AnimeDetail = () => {
                 )}
             </Box>
 
-            {/* Description Section */}
             {anime.description && (
                 <Box
                     sx={{
@@ -167,6 +168,50 @@ const AnimeDetail = () => {
                     <Typography variant="body1" sx={{ textAlign: "justify" }}>
                         {anime.description}
                     </Typography>
+                </Box>
+            )}
+
+            {anime.videos && anime.videos.length > 0 && (
+                <Box
+                    sx={{
+                        maxWidth: 1200,
+                        margin: "0 auto",
+                        px: 2,
+                        py: 4,
+                    }}
+                >
+                    <Typography variant="h5" gutterBottom>
+                        Danh sách tập:
+                    </Typography>
+                    <Grid container spacing={2}>
+                        {anime.videos.map((video) => (
+                            <Grid item xs={12} sm={6} md={4} key={video.id}>
+                                <Card
+                                    sx={{
+                                        backgroundColor: "#1e1e1e",
+                                        color: "#fff",
+                                        borderRadius: 2,
+                                        boxShadow: 3,
+                                        cursor: "pointer",
+                                        "&:hover": {
+                                            boxShadow: 6,
+                                        },
+                                    }}
+                                    onClick={() =>
+                                        navigate(`/video/${video.id}`, {
+                                            state: { videoUrl: video.videoUrl, episodeNumber: video.episodeNumber ,  animeId: anime.id,},
+                                        })
+                                    }
+                                >
+                                    <CardContent>
+                                        <Typography variant="subtitle1" gutterBottom>
+                                            Tập {video.episodeNumber}
+                                        </Typography>
+                                    </CardContent>
+                                </Card>
+                            </Grid>
+                        ))}
+                    </Grid>
                 </Box>
             )}
         </Box>

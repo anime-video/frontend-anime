@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import AppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
 import IconButton from "@mui/material/IconButton";
@@ -7,7 +8,7 @@ import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 
-// Icons minh hoạ
+// Icons minh họa
 import SearchIcon from "@mui/icons-material/Search";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import NotificationsIcon from "@mui/icons-material/Notifications";
@@ -16,6 +17,7 @@ import PersonIcon from "@mui/icons-material/Person";
 export const HeaderComponent = ({ searchTerm, onSearchChange }) => {
     // Local state for input value
     const [localSearch, setLocalSearch] = useState(searchTerm);
+    const navigate = useNavigate();
 
     // Handler for form submission: prevents default refresh and triggers search
     const handleSearchSubmit = (e) => {
@@ -32,7 +34,14 @@ export const HeaderComponent = ({ searchTerm, onSearchChange }) => {
                     justifyContent: "space-between",
                 }}
             >
-                <Box sx={{ display: "flex", alignItems: "center" }}>
+                <Box
+                    sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        cursor: "pointer",
+                    }}
+                    onClick={() => navigate("/")}
+                >
                     <Typography
                         variant="h4"
                         component="div"
@@ -64,7 +73,6 @@ export const HeaderComponent = ({ searchTerm, onSearchChange }) => {
                         placeholder="Tìm kiếm..."
                         fullWidth
                         value={localSearch}
-                        // Only update local state on change, do not trigger the search externally yet
                         onChange={(e) => setLocalSearch(e.target.value)}
                         InputProps={{
                             disableUnderline: true,
